@@ -1,4 +1,464 @@
 <html>
   <body>
+    <div id="appEl" style="font-family: sans-serif; max-width: 1000px; margin: 0 auto; padding: 20px;">
+  <!-- Header -->
+  <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 2px solid #4a4a4a;">
+    <div>
+      <h1 style="margin: 0; font-size: 2.5rem; color: #1a1a1a;">MDTR Chain Control</h1>
+      <p style="margin: 5px 0 0 0; color: #666;">Blockchain Network Interface</p>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <button id="addChainBtn" style="padding: 12px 24px; background: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: bold;">Add MDTR to Wallet</button>
+      <div id="walletInfoEl" style="display: none; align-items: center; gap: 10px;">
+        <span id="connectedAccountEl" style="padding: 8px 12px; background: #e9ecef; border-radius: 8px; font-size: 0.9rem;"></span>
+        <button id="disconnectBtn" style="padding: 8px 16px; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem;">Disconnect</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Chain Information -->
+  <section style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <h2 style="margin-top: 0; color: #333; border-bottom: 2px solid #007bff; padding-bottom: 8px;">Chain Information</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+      <div><strong>Chain Name:</strong> MDTR Protocol</div>
+      <div><strong>Chain ID:</strong> 7890</div>
+      <div><strong>Symbol:</strong> MDTR</div>
+      <div><strong>RPC URL:</strong> <span style="color: #007bff;">https://rpc.mdtr.network</span></div>
+      <div><strong>Block Explorer:</strong> <span style="color: #007bff;">https://explorer.mdtr.network</span></div>
+      <div><strong>Currency:</strong> MDTR</div>
+    </div>
+  </section>
+
+  <!-- Token Information -->
+  <section style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <h2 style="margin-top: 0; color: #333; border-bottom: 2px solid #007bff; padding-bottom: 8px;">IOJ Token</h2>
+    <div style="display: flex; align-items: center; gap: 20px; margin-top: 15px;">
+      <img id="tokenImgEl" src="" alt="IOJ Token" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #007bff;">
+      <div>
+        <div><strong>Name:</strong> Inter-Orbit Jewel</div>
+        <div><strong>Symbol:</strong> IOJ</div>
+        <div><strong>Decimals:</strong> 18</div>
+        <div><strong>Total Supply:</strong> 100,000,000</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Token Bridge -->
+  <section style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <h2 style="margin-top: 0; color: #333; border-bottom: 2px solid #007bff; padding-bottom: 8px;">Token Bridge</h2>
+    <div style="margin-top: 20px;">
+      <div style="margin-bottom: 15px;">
+        <label style="display: block; margin-bottom: 5px;"><strong>From Chain:</strong></label>
+        <select id="fromChainEl" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+          <option value="mdtr">MDTR Protocol</option>
+          <option value="polygon">Polygon</option>
+          <option value="bnb">BNB Chain</option>
+          <option value="ethereum">Ethereum</option>
+          <option value="solana">Solana</option>
+        </select>
+      </div>
+      
+      <div style="margin-bottom: 15px;">
+        <label style="display: block; margin-bottom: 5px;"><strong>To Chain:</strong></label>
+        <select id="toChainEl" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+          <option value="polygon">Polygon</option>
+          <option value="bnb">BNB Chain</option>
+          <option value="ethereum">Ethereum</option>
+          <option value="solana">Solana</option>
+          <option value="mdtr">MDTR Protocol</option>
+        </select>
+      </div>
+      
+      <div style="margin-bottom: 15px;">
+        <label style="display: block; margin-bottom: 5px;"><strong>Amount:</strong></label>
+        <input id="amountInputEl" type="number" placeholder="Enter amount" min="0" step="0.01" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+      </div>
+      
+      <button id="bridgeBtn" style="width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold;">Bridge Tokens</button>
+    </div>
+    
+    <div id="bridgeStatusEl" style="margin-top: 20px; padding: 15px; background: #e9ecef; border-radius: 6px; text-align: center; display: none;"></div>
+  </section>
+
+  <!-- Admin Faucet -->
+  <section style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <h2 style="margin-top: 0; color: #333; border-bottom: 2px solid #007bff; padding-bottom: 8px;">Admin Faucet</h2>
+    <div style="margin-top: 20px;">
+      <div style="margin-bottom: 15px;">
+        <label style="display: block; margin-bottom: 5px;"><strong>Recipient Address:</strong></label>
+        <input id="faucetAddressEl" type="text" placeholder="0x..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+      </div>
+      
+      <div style="margin-bottom: 15px;">
+        <label style="display: block; margin-bottom: 5px;"><strong>Amount (IOJ):</strong></label>
+        <input id="faucetAmountEl" type="number" value="100" min="1" max="10000" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+      </div>
+      
+      <button id="faucetBtn" style="width: 100%; padding: 12px; background: #6f42c1; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold;">Send IOJ Tokens</button>
+    </div>
+    
+    <div id="faucetStatusEl" style="margin-top: 20px; padding: 15px; background: #e9ecef; border-radius: 6px; text-align: center; display: none;"></div>
+  </section>
+
+  <!-- API Status -->
+  <section style="background: #f8f9fa; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <h2 style="margin-top: 0; color: #333; border-bottom: 2px solid #007bff; padding-bottom: 8px;">API Status</h2>
+    <div id="apiStatusEl" style="margin-top: 15px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+      <div class="statusItem" style="padding: 10px; background: #e9ecef; border-radius: 6px; text-align: center;">Loading...</div>
+    </div>
+  </section>
+</div>
+
+<script type="module">
+  // Generate token image
+  async function generateTokenImage() {
+    try {
+      const dataUrl = await root.generateImage("vinyl record album cover with jewel symbol, crypto token, dark blue and gold colors, detailed");
+      tokenImgEl.src = dataUrl;
+    } catch (error) {
+      tokenImgEl.src = "https://placehold.co/80x80/4a69bd/ffffff?text=IOJ";
+      console.error("Error generating token image:", error);
+    }
+  }
+
+  // Wallet connection state
+  let connectedWallet = null;
+  let connectedProvider = null;
+  
+  // Supported wallet providers
+  const walletProviders = {
+    metamask: { name: 'MetaMask', icon: '🦊' },
+    safePal: { name: 'SafePal', icon: '🔷' },
+    trustWallet: { name: 'Trust Wallet', icon: '🔺' },
+    coinbase: { name: 'Coinbase Wallet', icon: '🔵' },
+    walletConnect: { name: 'WalletConnect', icon: '🔐' }
+  };
+
+  // Initialize wallet provider detection
+  function getWalletProvider() {
+    if (window.ethereum) {
+      // Check for specific wallets
+      if (window.ethereum.isSafePal) {
+        return { provider: window.ethereum, type: 'safePal' };
+      } else if (window.ethereum.isTrust) {
+        return { provider: window.ethereum, type: 'trustWallet' };
+      } else if (window.ethereum.isCoinbaseWallet) {
+        return { provider: window.ethereum, type: 'coinbase' };
+      } else {
+        // Default to MetaMask or other Ethereum provider
+        return { provider: window.ethereum, type: 'metamask' };
+      }
+    }
+    return null;
+  }
+
+  // Connect to wallet
+  async function connectWallet() {
+    const wallet = getWalletProvider();
+    
+    if (!wallet) {
+      alert("No wallet detected. Please install a compatible wallet like MetaMask, SafePal, or Trust Wallet.");
+      return;
+    }
+    
+    try {
+      // Request account access
+      const accounts = await wallet.provider.request({ method: 'eth_requestAccounts' });
+      if (accounts.length > 0) {
+        connectedWallet = wallet.type;
+        connectedProvider = wallet.provider;
+        
+        // Update UI
+        connectedAccountEl.textContent = `${walletProviders[wallet.type].icon} ${accounts[0].substring(0, 6)}...${accounts[0].substring(38)}`;
+        walletInfoEl.style.display = 'flex';
+        addChainBtn.textContent = 'Wallet Connected';
+        addChainBtn.disabled = true;
+        
+        // Add chain to wallet
+        await addChainToWallet();
+        
+        // Listen for account changes
+        connectedProvider.on('accountsChanged', handleAccountsChanged);
+      }
+    } catch (error) {
+      console.error("Wallet connection error:", error);
+      alert("Failed to connect wallet. Please try again.");
+    }
+  }
+
+  // Handle wallet disconnection
+  function disconnectWallet() {
+    connectedWallet = null;
+    connectedProvider = null;
+    walletInfoEl.style.display = 'none';
+    addChainBtn.textContent = 'Add MDTR to Wallet';
+    addChainBtn.disabled = false;
+  }
+
+  // Handle account changes
+  function handleAccountsChanged(accounts) {
+    if (accounts.length === 0) {
+      // Wallet disconnected
+      disconnectWallet();
+    } else {
+      // Account changed
+      connectedAccountEl.textContent = `${walletProviders[connectedWallet].icon} ${accounts[0].substring(0, 6)}...${accounts[0].substring(38)}`;
+    }
+  }
+
+  // Add chain to any wallet
+  async function addChainToWallet() {
+    if (!connectedProvider) {
+      alert("Please connect your wallet first.");
+      return;
+    }
+
+    try {
+      // Switch to the MDTR chain
+      await connectedProvider.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: '0x1ed2' }] // 7890 in hex
+      });
+      
+      // Add token (IOJ) to the wallet
+      await connectedProvider.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20',
+          options: {
+            address: '0x1234567890123456789012345678901234567890', // Mock address
+            symbol: 'IOJ',
+            decimals: 18,
+            image: tokenImgEl.src
+          }
+        }
+      });
+      
+      alert(`MDTR Chain and IOJ Token added successfully to ${walletProviders[connectedWallet].name}!`);
+    } catch (error) {
+      if (error.code === 4902) {
+        // Chain doesn't exist, need to add it
+        try {
+          await connectedProvider.request({
+            method: 'wallet_addEthereumChain',
+            params: [{
+              chainId: '0x1ed2', // 7890 in hex
+              chainName: 'MDTR Protocol',
+              nativeCurrency: {
+                name: 'MDTR',
+                symbol: 'MDTR',
+                decimals: 18
+              },
+              rpcUrls: ['https://rpc.mdtr.network'],
+              blockExplorerUrls: ['https://explorer.mdtr.network']
+            }]
+          });
+          
+          // Try adding the token again
+          await connectedProvider.request({
+            method: 'wallet_watchAsset',
+            params: {
+              type: 'ERC20',
+              options: {
+                address: '0x1234567890123456789012345678901234567890', // Mock address
+                symbol: 'IOJ',
+                decimals: 18,
+                image: tokenImgEl.src
+              }
+            }
+          });
+        } catch (addError) {
+          console.error("Error adding chain:", addError);
+          alert("Failed to add MDTR chain to your wallet. Please add it manually using the network details provided.");
+        }
+      } else {
+        console.error("Error adding chain:", error);
+        alert("Failed to add MDTR chain to your wallet. Please add it manually using the network details provided.");
+      }
+    }
+  }
+
+  // Bridge tokens
+  bridgeBtn.onclick = async () => {
+    const fromChain = fromChainEl.value;
+    const toChain = toChainEl.value;
+    const amount = parseFloat(amountInputEl.value);
+    
+    if (!connectedWallet) {
+      showBridgeStatus("Please connect your wallet first", "error");
+      return;
+    }
+    
+    if (!amount || amount <= 0) {
+      showBridgeStatus("Please enter a valid amount", "error");
+      return;
+    }
+    
+    if (fromChain === toChain) {
+      showBridgeStatus("From and To chains must be different", "error");
+      return;
+    }
+    
+    showBridgeStatus("Processing bridge transaction...", "info");
+    
+    // Simulate API call
+    setTimeout(() => {
+      mockBridgeTransaction(fromChain, toChain, amount);
+    }, 2000);
+  };
+
+  function mockBridgeTransaction(from, to, amount) {
+    const txId = `0x${Math.random().toString(16).substr(2, 8)}`;
+    showBridgeStatus(`
+      <strong>Transaction Successful!</strong><br>
+      From: ${from.toUpperCase()} → To: ${to.toUpperCase()}<br>
+      Amount: ${amount} IOJ<br>
+      TX ID: ${txId}
+    `, "success");
+  }
+
+  function showBridgeStatus(message, type) {
+    bridgeStatusEl.style.display = "block";
+    bridgeStatusEl.style.background = type === "error" ? "#f8d7da" : type === "success" ? "#d4edda" : "#d1ecf1";
+    bridgeStatusEl.style.color = type === "error" ? "#721c24" : type === "success" ? "#155724" : "#0c5460";
+    bridgeStatusEl.innerHTML = message;
+  }
+
+  // Admin faucet
+  faucetBtn.onclick = async () => {
+    const address = faucetAddressEl.value;
+    const amount = parseInt(faucetAmountEl.value);
+    
+    if (!connectedWallet) {
+      showFaucetStatus("Please connect your wallet first", "error");
+      return;
+    }
+    
+    if (!address || !address.startsWith('0x') || address.length !== 42) {
+      showFaucetStatus("Please enter a valid Ethereum address", "error");
+      return;
+    }
+    
+    if (!amount || amount < 1 || amount > 10000) {
+      showFaucetStatus("Amount must be between 1 and 10,000 IOJ", "error");
+      return;
+    }
+    
+    showFaucetStatus("Sending IOJ tokens...", "info");
+    
+    // Simulate API call
+    setTimeout(() => {
+      mockFaucetTransaction(address, amount);
+    }, 2000);
+  };
+
+  function mockFaucetTransaction(address, amount) {
+    const txId = `0x${Math.random().toString(16).substr(2, 8)}`;
+    showFaucetStatus(`
+      <strong>Tokens Sent!</strong><br>
+      To: ${address}<br>
+      Amount: ${amount} IOJ<br>
+      TX ID: ${txId}
+    `, "success");
+  }
+
+  function showFaucetStatus(message, type) {
+    faucetStatusEl.style.display = "block";
+    faucetStatusEl.style.background = type === "error" ? "#f8d7da" : type === "success" ? "#d4edda" : "#d1ecf1";
+    faucetStatusEl.style.color = type === "error" ? "#721c24" : type === "success" ? "#155724" : "#0c5460";
+    faucetStatusEl.innerHTML = message;
+  }
+
+  // API Status
+  async function checkApiStatus() {
+    const apis = [
+      { name: 'MDTR RPC', url: 'https://rpc.mdtr.network' },
+      { name: 'Bridge API', url: 'https://bridge.mdtr.network' },
+      { name: 'Faucet API', url: 'https://faucet.mdtr.network' },
+      { name: 'Token API', url: 'https://token.mdtr.network' },
+      { name: 'Polygon Bridge', url: 'https://polygon.mdtr.network' },
+      { name: 'BNB Bridge', url: 'https://bnb.mdtr.network' },
+      { name: 'Ethereum Bridge', url: 'https://ethereum.mdtr.network' },
+      { name: 'Solana Bridge', url: 'https://solana.mdtr.network' }
+    ];
+
+    apiStatusEl.innerHTML = '';
+    
+    for (const api of apis) {
+      try {
+        // Simulate API check (not real calls)
+        await new Promise(resolve => setTimeout(resolve, 500));
+        const status = Math.random() > 0.2 ? 'Online' : 'Offline'; // Mock random status
+        const color = status === 'Online' ? '#28a745' : '#dc3545';
+        
+        apiStatusEl.innerHTML += `
+          <div class="statusItem" style="padding: 10px; background: #e9ecef; border-radius: 6px; text-align: center;">
+            <strong>${api.name}</strong><br>
+            <span style="color: ${color};">${status}</span>
+          </div>
+        `;
+      } catch (error) {
+        apiStatusEl.innerHTML += `
+          <div class="statusItem" style="padding: 10px; background: #e9ecef; border-radius: 6px; text-align: center;">
+            <strong>${api.name}</strong><br>
+            <span style="color: #dc3545;">Error</span>
+          </div>
+        `;
+      }
+    }
+  }
+
+  // Event listeners
+  addChainBtn.onclick = connectWallet;
+  disconnectBtn.onclick = disconnectWallet;
+
+  // Initialize
+  await generateTokenImage();
+  await checkApiStatus();
+  
+  // Refresh API status every 30 seconds
+  setInterval(checkApiStatus, 30000);
+</script>
+
+<style>
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    header {
+      flex-direction: column;
+      text-align: center;
+    }
+    
+    #walletInfoEl {
+      margin-top: 15px;
+      flex-direction: column;
+    }
+    
+    #connectedAccountEl {
+      margin-bottom: 10px;
+    }
+  }
+  
+  /* Button hover effects */
+  button:hover {
+    filter: brightness(1.1);
+    transition: filter 0.2s;
+  }
+  
+  /* Status item styling */
+  .statusItem {
+    transition: transform 0.2s;
+  }
+  
+  .statusItem:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  
+  /* Wallet info styling */
+  #connectedAccountEl {
+    font-family: monospace;
+    font-size: 0.9rem;
+  }
+</style>
   </body>
 </html>
